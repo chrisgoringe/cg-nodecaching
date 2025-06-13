@@ -1,0 +1,7 @@
+# Add the unique identifier of each node type you want to have caching added to.
+# Lines starting with a hash are comments.
+
+# The identifier you want is the one used in NODE_CLASS_MAPPINGS
+
+# For instance, uncomment this next line:
+KSampler
