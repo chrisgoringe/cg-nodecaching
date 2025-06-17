@@ -66,12 +66,19 @@ def wrap_function_fullcache(wrappable:Callable) -> Callable:
     return wrapped
 
 def created_cached_version(class_type:str):
+    if getattr(class_type, FLAG, False): return
     class_to_wrap = NODE_CLASS_MAPPINGS[class_type]
-    NODE_CLASS_MAPPINGS[f"cached_{class_type}"] = create_caching_node(class_to_wrap)
+    converted = create_caching_node(class_to_wrap)
+    if converted:
+        NODE_CLASS_MAPPINGS[f"cached_{class_type}"] = create_caching_node(class_to_wrap)
 
 def convert_to_caching(class_type:str):
+    if getattr(class_type, FLAG, False): return
     class_to_wrap = NODE_CLASS_MAPPINGS[class_type]
-    NODE_CLASS_MAPPINGS[class_type] = create_caching_node(class_to_wrap, new_category=class_to_wrap.CATEGORY)
+    converted = create_caching_node(class_to_wrap, new_category=class_to_wrap.CATEGORY)
+    if converted:
+        NODE_CLASS_MAPPINGS[class_type] = converted
+    return converted is not None
 
 def is_caching(class_type:str) -> bool:
     class_to_wrap = NODE_CLASS_MAPPINGS[class_type]
@@ -85,7 +92,15 @@ def create_caching_node(class_to_wrap:Type, new_name:Optional[str]=None, new_cat
 
     returns a new Type which is a subclass of `class_to_wrap`
     '''
-    new_class = types.new_class(new_name or f"cached_{class_to_wrap}", (class_to_wrap,))
+    if getattr(class_to_wrap, FLAG, False): 
+        print(f"{class_to_wrap.__name__} already has caching")
+        return None
+    new_name = new_name or f"cached_{class_to_wrap.__name__}"
+    if new_name in globals()['NODE_CLASS_MAPPINGS']: 
+        print(f"{class_to_wrap.__name__} already wrapped as {new_name}")
+        return None
+    print(f"Wrapping {class_to_wrap.__name__} as {new_name}")
+    new_class = types.new_class(new_name, (class_to_wrap,))
     function_name = getattr(new_class, 'FUNCTION')
     wrapped_function = wrap_function_fullcache( getattr(new_class, function_name) )
     setattr(new_class, f"{FUNCTION_NAME_PREFIX}{function_name}", wrapped_function)

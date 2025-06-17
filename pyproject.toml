@@ -1,0 +1,16 @@
+[project]
+name = "cg-nodecaching"
+description = "Add caching to any custom node"
+version = "1.0.1"
+license = {file = "LICENSE"}
+
+[project.urls]
+Repository = "https://github.com/chrisgoringe/cg-nodecaching"
+#  Used by Comfy Registry https://registry.comfy.org
+
+[tool.comfy]
+PublisherId = "chrisgoringe"
+DisplayName = "cg-nodecaching"
+Icon = ""
+includes = []
+

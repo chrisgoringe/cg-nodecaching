@@ -40,11 +40,15 @@ app.registerExtension({
             else return t;
         }
     },
+
+    async init() {
+        await call_server(null, "/cg_cache_node_init")
+    }
 })
 
 async function call_server(type, method) {
     const body = new FormData();
-    body.append('type', type);
+    if (type) body.append('type', type);
     const response = await api.fetchApi(method, { method: "POST", body, });
     const data = await response.json()
     return data
